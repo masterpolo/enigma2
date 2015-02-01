@@ -109,10 +109,10 @@ class About(Screen):
 			})
 
 	def populate(self):
-		self["lab1"] = StaticText(_("openATV"))
-		self["lab2"] = StaticText(_("By openATV Image Team"))
+		self["lab1"] = StaticText(_("MasterAtv"))
+		self["lab2"] = StaticText(_("By masterpolo"))
 		model = None
-		self["lab3"] = StaticText(_("Support at") + " www.opena.tv")
+		self["lab3"] = StaticText(_("Support at") + " www.pingutmpli.fora.pl")
 
 		AboutText = getAboutText()[0]
 
@@ -257,8 +257,8 @@ class SystemMemoryInfo(Screen):
 		Screen.__init__(self, session)
 		Screen.setTitle(self, _("Memory Information"))
 		self.skinName = ["SystemMemoryInfo", "About"]
-		self["lab1"] = StaticText(_("openATV"))
-		self["lab2"] = StaticText(_("By openATV Image Team"))
+		self["lab1"] = StaticText(_("MasterAtv"))
+		self["lab2"] = StaticText(_("By masterpolo"))
 		self["AboutScrollLabel"] = ScrollLabel()
 
 		self["actions"] = ActionMap(["SetupActions", "ColorActions"],
