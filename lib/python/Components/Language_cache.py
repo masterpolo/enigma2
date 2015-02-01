@@ -3,6 +3,12 @@
 #
 
 LANG_TEXT = {
+"pl_PL": {
+	 "T1": "W celu wyboru języka użyj klawiszy GÓRA i DÓŁ. Nastepnie nacisnij przycisk OK.",
+	 "T2": "Wybór języka",
+	 "T3": "Anuluj",
+	 "T4": "Zapisz",
+},
 "de_DE": {
 	 "T1": "Für Sprachauswahl Hoch/Runter-Tasten nutzen. Danach OK drücken.",
 	 "T2": "Sprachauswahl",
@@ -164,12 +170,6 @@ LANG_TEXT = {
 	 "T2": "Språkvalg",
 	 "T3": "Avbryte",
 	 "T4": "Lagre",
-},
-"pl_PL": {
-	 "T1": "W celu wyboru języka użyj klawiszy GÓRA i DÓŁ. Nastepnie nacisnij przycisk OK.",
-	 "T2": "Wybór języka",
-	 "T3": "Anuluj",
-	 "T4": "Zapisz",
 },
 "pt_PT": {
 	 "T1": "Por favor use as teclas de Cima e Baixi para selecionar a sua língua. Depois prima OK.",
