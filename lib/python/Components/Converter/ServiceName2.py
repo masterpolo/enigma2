@@ -15,7 +15,8 @@
 # Version: 1.3 (27.01.2014) small iptv fix - 2boom
 # Version: 1.4 (30.06.2014) fix iptv reference - 2boom
 # Version: 1.5 (04.07.2014) fix iptv reference cosmetic - 2boom
-# Support: http://dream.altmaster.net/ & http://gisclub.tv
+# Version: 1.6 (14.10.2014) add Tricolor Sibir prov - 2boom
+# Support: http://dream.altmaster.net/ & http://gisclub.tv & http://2boom-2boom.blogspot.com
 #
 
 from Components.Converter.Converter import Converter
@@ -40,6 +41,7 @@ class ServiceName2(Converter, object):
 	SATELLITE = 7
 	ALLREF = 8
 	FORMAT = 9
+	
 
 	def __init__(self, type):
 		Converter.__init__(self, type)
@@ -214,13 +216,13 @@ class ServiceName2(Converter, object):
 				fmt = ["t ","F ","Y ","i ","f ","M"]	#(type frequency symbol_rate inversion fec modulation)
 			elif type == 'DVB-T':
 				if ref:
-					fmt = ["O ","F ","c ","l ","h ","m ","g "]	#(orbital_position code_rate_hp transmission_mode guard_interval constellation)
+					fmt = ["O ","F ","h ","m ","g ","c"]	#(orbital_position code_rate_hp transmission_mode guard_interval constellation)
 				else:
-					fmt = ["t ","F ","c ","l ","h ","m ","g "]	#(type frequency code_rate_hp transmission_mode guard_interval constellation)
+					fmt = ["t ","F ","h ","m ","g ","c"]	#(type frequency code_rate_hp transmission_mode guard_interval constellation)
 			elif type == 'IP-TV':
 				return _("Streaming")
 			else:
-				fmt = ["O ","s ","M ","F ","p ","Y ","f"]		#(orbital_position frequency polarization symbol_rate fec)
+				fmt = ["O ","F","p ","Y ","f"]		#(orbital_position frequency polarization symbol_rate fec)
 		for line in fmt:
 			f = line[:1]
 			if f == 't':	# %t - tuner_type (dvb-s/s2/c/t)
@@ -241,11 +243,8 @@ class ServiceName2(Converter, object):
 				else:
 					result += type
 			elif f == 'F':	# %F - frequency (dvb-s/s2/c/t) in KHz
-				if type in ('DVB-S') and self.tpdata.get('frequency', 0) >0 :
-					result += '%d MHz'%(self.tpdata.get('frequency', 0) / 1000) 
-				if type in ('DVB-C','DVB-T'):
-					result += '%.3f MHz'%(((self.tpdata.get('frequency', 0) +500) / 1000) / 1000.0)
-#					result += '%.3f'%(((self.tpdata.get('frequency', 0) / 1000) +1) / 1000.0) + " MHz " 
+				if type in ('DVB-S','DVB-C','DVB-T'):
+					result += '%d'%(self.tpdata.get('frequency', 0) / 1000) 
 			elif f == 'f':	# %f - fec_inner (dvb-s/s2/c/t)
 				if type in ('DVB-S','DVB-C'):
 					x = self.tpdata.get('fec_inner', 15)
@@ -276,7 +275,7 @@ class ServiceName2(Converter, object):
 			elif f == 'p':	# %p - polarization (dvb-s/s2)
 				if type == 'DVB-S':
 					x = self.tpdata.get('polarization', 0)
-					result += x in range(4) and {0:'H',1:'V',2:'LHC',3:'RHC'}[x] or '?'
+					result += x in range(4) and {0:'H',1:'V',2:'L',3:'R'}[x] or '?'
 			elif f == 'Y':	# %Y - symbol_rate (dvb-s/s2/c)
 				if type in ('DVB-S','DVB-C'):
 					result += '%d'%(self.tpdata.get('symbol_rate', 0) / 1000)
@@ -353,6 +352,8 @@ class ServiceName2(Converter, object):
 			return "SCHURA"
 		elif 'udp/239.0.1' in refstr:
 			return "Lanet"
+		elif 'kirito.la.net.ua' in refstr:
+			return "Lanet"
 		elif '3a7777' in refstr:
 			return "IPTVNTV"
 		elif 'KartinaTV' in refstr:
@@ -365,10 +366,8 @@ class ServiceName2(Converter, object):
 			return "SOVOKTV"
 		elif 'Rodnoe' in refstr:
 			return "RODNOETV"
-		elif '238.1.1.89%3a1234' in refstr:
-			return "TRK UKRAINE"
-		elif '238.1.1.181%3a1234' in refstr:
-			return "VIASAT"
+		elif '238.1.1.' in refstr:
+			return "Matrix"
 		elif 'cdnet' in refstr:
 			return "NonameTV"
 		elif 'unicast' in refstr:
@@ -385,12 +384,20 @@ class ServiceName2(Converter, object):
 			return "MovieStar"
 		elif 'udp/239.0.0.' in refstr:
 			return "Trinity"
+		elif 'udp/239.100.' in refstr or 'udp/233.252.8.' in refstr or 'udp/225.225.225.' in refstr or 'udp/225.1.' in refstr:
+			return "Volia TV"
 		elif '.cn.ru' in refstr or 'novotelecom' in refstr:
 			return "Novotelecom"
 		elif 'www.youtube.com' in refstr:
 			return "www.youtube.com"
 		elif '.torrent-tv.ru' in refstr:
 			return "torrent-tv.ru"
+		elif 'tv.lifelink.ru' in refstr:
+			return "tv.lifelink.ru"
+		elif 'sat-elit.net' in refstr:
+			return "iptv.sat-elit.net"
+		elif '//91.201.' in refstr:
+			return "www.livehd.tv"
 		elif 'web.tvbox.md' in refstr:
 			return "web.tvbox.md"
 		elif 'live-p12' in refstr:
@@ -514,17 +521,26 @@ class ServiceName2(Converter, object):
 			num, bouq = self.getServiceNumber(ref or eServiceReference(info.getInfoString(iServiceInformation.sServiceref)))
 			return bouq
 		elif self.type == self.PROVIDER:
+			tmpprov = tmpsat = ''
 			if self.isStream:
 				if self.refstr and ('%3a//' in self.refstr or '%3a//' in self.refstr):
 					return self.getIPTVProvider(self.refstr)
 				return self.getIPTVProvider(refstr)
 			else:
 				if self.ref:
-					return self.getProviderName(self.ref)
+					tmpprov += self.getProviderName(self.ref)
 				if ref:
-					return self.getProviderName(ref)
+					tmpprov += self.getProviderName(ref)
 				else: 
-					return info.getInfoString(iServiceInformation.sProvider) or ''
+					tmpprov += info.getInfoString(iServiceInformation.sProvider) or ''
+			if self.ref and self.info:
+				tmpsat +=  self.getTransponderInfo(self.info, self.ref, 'O')
+			else:
+				tmpsat += self.getTransponderInfo(info, ref, 'O')
+			if 'tricolor' in tmpprov.lower() and tmpsat.startswith('56'):
+				return '%s %s' % (tmpprov, 'Sibir')
+			else:
+				return tmpprov
 		elif self.type == self.REFERENCE:
 			if self.refstr:
 				return self.refstr
